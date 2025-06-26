@@ -1,6 +1,10 @@
 const express = require('express');
 const fs = require('fs');
 const app = express();
+const morgan = require('morgan');
+
+//middlewares
+app.use(morgan('dev')); //using 3rd party middlewares
 
 app.use(express.json());
 //expess.json() is a middleware
@@ -13,23 +17,29 @@ app.use(express.json());
 // This will be pushed to middleware stack
 //since there is no route this will apply to all the requests
 //position of middlware stack matter a lot in express
-app.use((req, rs, next) => {
+//global middleware
+app.use((req, res, next) => {
   console.log(`Hello from the middleware`);
   next(); //mandatory(never forget this)
+});
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
 });
 
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`, 'utf-8')
 );
 
-app.get('/', (req, res) => {
-  res.send('Server is up and running');
-});
+//Route Handlers
 
 const getAllTours = (req, res) => {
+  console.log(req.requestTime);
   res.status(200).json({
     //stick to this json data format
     status: 'success',
+    requestedAt: req.requestTime,
     results: tours.length,
     data: {
       tours,
@@ -141,6 +151,40 @@ const deleteTour = (req, res) => {
 //204 means no content so we will set data: null
 //data: null signifies that data that we deleted no longer exists
 
+const getAllUsers = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+}; //500 is internal server error
+
+const createUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+};
+
+const getUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+};
+
+const updateUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+};
+
+const deleteUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+};
 //refactoring routes:
 
 // app.get('/api/v1/tours',getAllTours);
@@ -155,6 +199,8 @@ const deleteTour = (req, res) => {
 
 //chaining is another best solution to refactor routes
 
+//ROUTES
+
 app.route('/api/v1/tours').get(getAllTours).post(createTour);
 
 app
@@ -163,12 +209,21 @@ app
   .patch(updateTour)
   .delete(deleteTour);
 
+app.route('/api/v1/users').get(getAllUsers).post(createUser);
+
+app
+  .route('/api/v1/users/:id')
+  .get(getUser)
+  .patch(updateUser)
+  .delete(deleteUser);
+
 //This middleware function will not even execute since route handlers terminate the request response cycle
 // app.use((req, rs, next) => {
 //   console.log(`Hello from the middleware`);
 //   next(); //mandatory(never forget this)
 // });
 
+//Start server
 const port = 3001;
 
 app.listen(port, () => {
