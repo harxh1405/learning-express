@@ -7,7 +7,9 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 
 //middlewares
-app.use(morgan('dev')); //using 3rd party middlewares
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev')); //using 3rd party middlewares
+}
 
 app.use(express.json());
 //expess.json() is a middleware
@@ -21,6 +23,9 @@ app.use(express.json());
 //since there is no route this will apply to all the requests
 //position of middlware stack matter a lot in express
 //global middleware
+
+//serving static files from folder and not from the route
+app.use(express.static(`${__dirname}/public`)); //dont use public in URL while searching since it will be set as root when no route is found and overview.html will be rendered
 app.use((req, res, next) => {
   console.log(`Hello from the middleware`);
   next(); //mandatory(never forget this)

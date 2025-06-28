@@ -4,12 +4,24 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`, 'utf-8')
 );
 
+//param middleware for id check
+
+exports.checkID = (req, res, next, val) => {
+  console.log(`Tour id is: ${val}`);
+  if (req.params.id * 1 > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  next();
+};
 //Route Handlers
 
 exports.getAllTours = (req, res) => {
   console.log(req.requestTime);
   res.status(200).json({
-    //stick to this json data format
+    //stick to this jsend data format
     status: 'success',
     requestedAt: req.requestTime,
     results: tours.length,
@@ -66,12 +78,12 @@ exports.getTour = (req, res) => {
 
   //check for valid id
   // if (id > tours.length - 1) //feel free to use this or the following one
-  if (!tour) {
-    return res.status(404).json({
-      status: 'fail',
-      messagee: 'Invalid ID',
-    });
-  }
+  // if (!tour) {
+  //   return res.status(404).json({
+  //     status: 'fail',
+  //     messagee: 'Invalid ID',
+  //   });
+  // } second method to check id
 
   res.status(200).json({
     status: 'success',
@@ -87,14 +99,14 @@ exports.getTour = (req, res) => {
 //handling patch request(put also works in the same way)
 
 exports.updateTour = (req, res) => {
-  const id = req.params.id * 1;
+  // const id = req.params.id * 1;
 
-  if (id > tours.length - 1) {
-    return res.status(404).json({
-      status: 'fail',
-      messagee: 'Invalid ID',
-    });
-  }
+  // if (id > tours.length - 1) {
+  //   return res.status(404).json({
+  //     status: 'fail',
+  //     messagee: 'Invalid ID',
+  //   });
+  // }
 
   res.status(200).json({
     status: 'success',
@@ -106,19 +118,18 @@ exports.updateTour = (req, res) => {
 
 //handling delete requests
 exports.deleteTour = (req, res) => {
-  const id = req.params.id * 1;
+  // const id = req.params.id * 1;
 
-  if (id > tours.length - 1) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
+  // if (id > tours.length - 1) {
+  //   return res.status(404).json({
+  //     status: 'fail',
+  //     message: 'Invalid ID',
+  //   });
 
-    res.status(204).json({
-      status: 'success',
-      data: null,
-    });
-  }
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
 }; //we send 204 in response when deleting a resource
 //204 means no content so we will set data: null
 //data: null signifies that data that we deleted no longer exists
