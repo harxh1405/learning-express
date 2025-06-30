@@ -1,5 +1,8 @@
 const fs = require('fs');
+const Tour = require('./../models/tourModel'); //importing the Tour model
 
+// reading data from file
+// we will use this data to test our API
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`, 'utf-8')
 );

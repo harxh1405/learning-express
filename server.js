@@ -9,6 +9,24 @@ const app = require('./app');
 // console.log(process.env);
 
 //////////////////////////////////////////////////
+//Connecting to database
+const DB = process.env.DATABASE.replace(
+  '<PASSWORD>',
+  process.env.DATABASE_PASSWORD
+);
+// console.log(DB); //to check if the password is replaced or not
+mongoose
+  .connect(DB, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    // console.log(con.connection); //to check if the connection is established
+    console.log('DB connection successful');
+  });
+
+//////////////////////////////////////////////////
+
 //entry point of our application
 //Start server
 const port = process.env.PORT || 3001;
